@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>AllSilentsMenuSources</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  #jumpscare {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: black;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  #jumpscare img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+  }
+  /* Hide the iframe but keep it loaded */
+  #player {
+    position: fixed;
+    width: 1px; height: 1px;
+    left: -100vw; /* move off-screen */
+    top: -100vh;
+  }
+</style>
+</head>
+<body>
+
+<h1>AllSilentsMenuSources</h1>
+<button id="downloadBtn">Download Zip</button>
+
+<div id="jumpscare">
+  <img src="https://www.icegif.com/wp-content/uploads/2023/02/icegif-1692.gif" alt="BOO!">
+</div>
+
+<!-- YouTube iframe API will be loaded dynamically -->
+<div id="player"></div>
+
+<script>
+  let player;
+  let playerReady = false;
+  let done = false;
+
+  // Load YouTube IFrame API script dynamically
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  // This function gets called by the YouTube API once loaded
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      height: '1',
+      width: '1',
+      videoId: 'hrrJe_JKVxg',
+      playerVars: {
+        'autoplay': 0,
+        'controls': 0,
+        'disablekb': 1,
+        'modestbranding': 1,
+        'rel': 0,
+        'showinfo': 0,
+        'iv_load_policy': 3,
+        'playsinline': 1
+      },
+      events: {
+        'onReady': onPlayerReady,
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+
+  function onPlayerReady(event) {
+    playerReady = true;
+  }
+
+  function onPlayerStateChange(event) {
+    // You can handle if you want, not necessary here
+  }
+
+  const downloadBtn = document.getElementById('downloadBtn');
+  const jumpscare = document.getElementById('jumpscare');
+
+  downloadBtn.addEventListener('click', () => {
+    if (!playerReady) {
+      alert("Player is loading, please wait a moment and try again.");
+      return;
+    }
+
+    jumpscare.style.display = 'flex';
+    player.playVideo();
+
+    setTimeout(() => {
+      jumpscare.style.display = 'none';
+      player.stopVideo();
+
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          alert("YOU HAVE BEEN HACKED! 💀\nYour IP: " + data.ip + "\n\n(YOU WILL DIE TONIGHT. YOU ARE GONE, YOUR DEAD.)");
+        });
+    }, 4000);
+  });
+</script>
+</body>
+</html>
